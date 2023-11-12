@@ -1,6 +1,7 @@
 using System.Device.Gpio;
 using Microsoft.Extensions.Options;
 using RaspberryApiTest.Configuration;
+using RaspberryApiTest.Services;
 
 namespace RaspberryApiTest.Raspberry;
 
@@ -10,11 +11,22 @@ public static class RaspberryRegistration
     {
         services.Configure<RaspberryOptions>(configuration.GetSection(RaspberryOptions.SectionName));
 
+        services.AddScoped<PumpsProvider>();
+        
         services.AddSingleton<GpioController>(sp =>
         {
-            var raspberryOptions = sp.GetRequiredService<IOptionsMonitor<RaspberryOptions>>();
+            var raspberryOptions = sp.GetRequiredService<IOptions<RaspberryOptions>>();
+            var logger = sp.GetRequiredService<ILogger<Program>>();
+            
             var gpioController = new GpioController(PinNumberingScheme.Logical);
-            gpioController.OpenPin(raspberryOptions.CurrentValue.PumpPin, PinMode.Output);
+
+            foreach (var pumpConfig in raspberryOptions.Value.Pumps)
+            {
+                gpioController.OpenPin(pumpConfig.Pin, PinMode.Output);
+                
+                logger.LogInformation("Opened pin '{Pin}' for pump with id '{PumpId}' ", 
+                    pumpConfig.Pin, pumpConfig.Id);
+            }
             
             return gpioController;
         });

@@ -4,5 +4,5 @@ public class RaspberryOptions
 {
     public static readonly string SectionName = "Raspberry";
 
-    public int PumpPin { get; set; }
+    public PumpConfig[] Pumps { get; set; } = Array.Empty<PumpConfig>();
 }

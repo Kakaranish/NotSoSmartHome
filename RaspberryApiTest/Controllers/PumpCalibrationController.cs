@@ -15,28 +15,34 @@ public class PumpCalibrationController : ControllerBase
     private readonly IOptionsMonitor<RaspberryOptions> _raspberryOptions;
     private readonly GpioController _gpioController;
     private readonly Calibrator _calibrator;
+    private readonly PumpsProvider _pumpsProvider;
 
     public PumpCalibrationController(ILogger<PumpCalibrationController> logger, 
         IOptionsMonitor<RaspberryOptions> raspberryOptions,
         GpioController gpioController,
-        Calibrator calibrator)
+        Calibrator calibrator,
+        PumpsProvider pumpsProvider)
     {
         _logger = logger;
         _raspberryOptions = raspberryOptions;
         _gpioController = gpioController;
         _calibrator = calibrator;
+        _pumpsProvider = pumpsProvider;
     }
 
     [HttpPost("")]
-    public async Task ToggleCalibration(CancellationToken cancellationToken)
+    public async Task<IActionResult> ToggleCalibration([FromBody] ToggleCalibrationRequestDto requestDto, 
+        CancellationToken cancellationToken)
     {
-        var pumpPin = _raspberryOptions.CurrentValue.PumpPin;
+        var pumpConfig = _pumpsProvider.GetOrDefaultById(requestDto.PumpId);
+        if (pumpConfig is null)
+            return NotFound("pump not found");
         
         try
         {
             await Semaphore.WaitAsync(5000, cancellationToken);
             
-            TogglePump();
+            TogglePump(pumpConfig.Pin);
     
             _logger.LogInformation("Toggled pump");
         }
@@ -44,11 +50,12 @@ public class PumpCalibrationController : ControllerBase
         {
             Semaphore.Release();
         }
+
+        return Ok();
     }
 
-    private void TogglePump()
+    private void TogglePump(int pumpPin)
     {
-        var pumpPin = _raspberryOptions.CurrentValue.PumpPin;
         var isEnabled = _gpioController.Read(pumpPin) == PinValue.Low;
         
         if (isEnabled)
@@ -60,4 +67,6 @@ public class PumpCalibrationController : ControllerBase
             _gpioController.Write(pumpPin, PinValue.Low);
         }
     }
+
+    public record ToggleCalibrationRequestDto(string PumpId);
 }
