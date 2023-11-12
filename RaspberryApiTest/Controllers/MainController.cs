@@ -1,22 +1,23 @@
 using System.Device.Gpio;
 using Microsoft.AspNetCore.Mvc;
+using RaspberryApiTest.Services;
 
-namespace RaspberryApiTest.Services;
+namespace RaspberryApiTest.Controllers;
 
 [Route("/")]
 public class MainController : ControllerBase
 {
     private readonly ILogger<MainController> _logger;
-    private readonly GpioController _gpioController;
+    private readonly GpioControllerAccessor _gpioControllerAccessor;
     private readonly PumpsProvider _pumpsProvider;
 
     public MainController(
         ILogger<MainController> logger,
-        GpioController gpioController,
+        GpioControllerAccessor gpioControllerAccessor,
         PumpsProvider pumpsProvider)
     {
         _logger = logger;
-        _gpioController = gpioController;
+        _gpioControllerAccessor = gpioControllerAccessor;
         _pumpsProvider = pumpsProvider;
     }
 
@@ -32,14 +33,16 @@ public class MainController : ControllerBase
     {
         var pump = _pumpsProvider.GetOrDefaultById(requestDto.PumpId);
         if (pump is null)
+        {
             return NotFound("Pump not found");
+        }
         
-        var currentPinValue = _gpioController.Read(pump.Pin);
+        var currentPinValue = _gpioControllerAccessor.GetPinValue(pump.Pin);
         var newPinValue = currentPinValue == PinValue.High ? PinValue.Low : PinValue.High;
 
-        _gpioController.Write(pump.Pin, newPinValue);
+        _gpioControllerAccessor.SetPinValue(pump.Pin, newPinValue);
 
-        _logger.LogInformation("Toggled pin '{PinNumber}' value from '{PreviousState}' to '{NewState}'",
+        _logger.LogInformation("Toggled pin '{PinNumber}' value from '{PreviousPinValue}' to '{NewPinValue}'",
             pump.Pin, currentPinValue, newPinValue);
 
         return Ok();
