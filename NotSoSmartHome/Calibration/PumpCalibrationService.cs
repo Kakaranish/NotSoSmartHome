@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
-using RaspberryApiTest.Services;
-using RaspberryApiTest.Types;
+using NotSoSmartHome.Services;
+using NotSoSmartHome.Types;
 
-namespace RaspberryApiTest.Calibration;
+namespace NotSoSmartHome.Calibration;
 
 public class PumpCalibrationService
 {

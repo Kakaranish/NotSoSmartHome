@@ -1,8 +1,8 @@
 using System.Device.Gpio;
 using Microsoft.Extensions.Options;
-using RaspberryApiTest.Configuration;
+using NotSoSmartHome.Configuration;
 
-namespace RaspberryApiTest.Services;
+namespace NotSoSmartHome.Services;
 
 public class GpioControllerFactory
 {

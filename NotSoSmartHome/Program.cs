@@ -1,6 +1,6 @@
-using RaspberryApiTest.Calibration;
-using RaspberryApiTest.Raspberry;
-using RaspberryApiTest.Services;
+using NotSoSmartHome.Calibration;
+using NotSoSmartHome.Raspberry;
+using NotSoSmartHome.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();

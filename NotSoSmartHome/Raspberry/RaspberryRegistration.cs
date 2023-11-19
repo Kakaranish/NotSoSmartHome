@@ -1,7 +1,7 @@
-using RaspberryApiTest.Configuration;
-using RaspberryApiTest.Services;
+using NotSoSmartHome.Configuration;
+using NotSoSmartHome.Services;
 
-namespace RaspberryApiTest.Raspberry;
+namespace NotSoSmartHome.Raspberry;
 
 public static class RaspberryRegistration
 {

@@ -1,8 +1,8 @@
 using System.Device.Gpio;
 using Microsoft.AspNetCore.Mvc;
-using RaspberryApiTest.Services;
+using NotSoSmartHome.Services;
 
-namespace RaspberryApiTest.Controllers;
+namespace NotSoSmartHome.Controllers;
 
 [Route("pump-calibration")]
 public class PumpCalibrationController : ControllerBase

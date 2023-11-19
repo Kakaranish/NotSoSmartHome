@@ -1,4 +1,4 @@
-namespace RaspberryApiTest.Calibration;
+namespace NotSoSmartHome.Calibration;
 
 public class CalibrationMeasurement
 {

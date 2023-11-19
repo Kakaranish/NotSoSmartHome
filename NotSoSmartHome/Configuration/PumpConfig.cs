@@ -1,4 +1,4 @@
-namespace RaspberryApiTest.Configuration;
+namespace NotSoSmartHome.Configuration;
 
 public class PumpConfig
 {

@@ -1,3 +1,3 @@
-namespace RaspberryApiTest.Types;
+namespace NotSoSmartHome.Types;
 
 public record PumpId(string Value);

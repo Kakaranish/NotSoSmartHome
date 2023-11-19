@@ -1,6 +1,6 @@
 using System.Device.Gpio;
 
-namespace RaspberryApiTest.Services;
+namespace NotSoSmartHome.Services;
 
 public class FakeGpioController : GpioController
 {

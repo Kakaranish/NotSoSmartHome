@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaspberryApiTest", "RaspberryApiTest\RaspberryApiTest.csproj", "{26861E60-D559-4780-A285-2D28008A3522}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotSoSmartHome", "NotSoSmartHome\NotSoSmartHome.csproj", "{26861E60-D559-4780-A285-2D28008A3522}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
