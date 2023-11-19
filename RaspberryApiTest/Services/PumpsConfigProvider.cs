@@ -3,11 +3,11 @@ using RaspberryApiTest.Configuration;
 
 namespace RaspberryApiTest.Services;
 
-public class PumpsProvider
+public class PumpsConfigProvider
 {
     private readonly IOptions<RaspberryOptions> _raspberryOptions;
 
-    public PumpsProvider(IOptions<RaspberryOptions> raspberryOptions)
+    public PumpsConfigProvider(IOptions<RaspberryOptions> raspberryOptions)
     {
         _raspberryOptions = raspberryOptions;
     }

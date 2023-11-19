@@ -1,66 +1,98 @@
 using System.Device.Gpio;
-using Microsoft.Extensions.Options;
-using RaspberryApiTest.Configuration;
 
 namespace RaspberryApiTest.Services;
 
-public class GpioControllerAccessor
+public class FakeGpioController : GpioController
 {
-    private readonly Dictionary<int, Guid> _locks = new(); // TODO: Concurrency
-
-    private readonly ILogger<GpioControllerAccessor> _logger;
-    private readonly IOptions<RaspberryOptions> _raspberryOptions;
-    private readonly GpioController _gpioController;
-
-    public GpioControllerAccessor(
-        ILogger<GpioControllerAccessor> logger,
-        IOptions<RaspberryOptions> raspberryOptions)
+    private readonly Dictionary<int, PinValue> _pinValues = new(); 
+    
+    public override PinValue Read(int pinNumber)
     {
-        _gpioController = new GpioController(PinNumberingScheme.Logical);
-        _logger = logger;
-        _raspberryOptions = raspberryOptions;
-        
-        InitializePumpPins();
+        return _pinValues.TryGetValue(pinNumber, out var pinValue)
+            ? pinValue
+            : PinValue.Low;
     }
 
-    public void SetPinValue(int pinNumber, PinValue pinValue, Guid? lockId = null)
+    public override void Write(int pinNumber, PinValue value)
     {
-        if (!_locks.TryGetValue(pinNumber, out var existingLockId))
+        _pinValues[pinNumber] = value;
+    }
+}
+
+public interface IGpioControllerAccessor
+{
+    void SetPinValue(int pinNumber, PinValue pinValue, Guid? leaseId = null);
+    PinValue GetPinValue(int pinNumber);
+    bool BreakLease(int pinNumber);
+}
+
+public class GpioControllerAccessor : IGpioControllerAccessor
+{
+    private static readonly object LeaseLock = new();
+    
+    private readonly Dictionary<int, Guid> _leases = new();
+
+    private readonly GpioController _gpioController;
+
+    public GpioControllerAccessor(GpioControllerFactory gpioControllerFactory)
+    {
+        _gpioController = gpioControllerFactory.Create();
+    }
+    
+    public void SetPinValue(int pinNumber, PinValue pinValue, Guid? leaseId = null)
+    {
+        var leaseAcquired = false;
+        
+        lock (LeaseLock)
         {
-            if (lockId is not null)
+            if (_leases.TryGetValue(pinNumber, out var existingLeaseId))
             {
-                _locks.TryAdd(pinNumber, lockId.Value);
-            }
-        }
-        else
-        {
-            if (lockId is null)
-            {
-                throw new InvalidOperationException("Lock id is required to set pin value");
-            }
+                if (leaseId is null)
+                {
+                    throw new InvalidOperationException($"Pin is already leased. Provide '{nameof(leaseId)}' to change its value");
+                }
             
-            if (lockId != existingLockId)
+                if (leaseId != existingLeaseId)
+                {
+                    throw new InvalidOperationException($"Invalid '{nameof(leaseId)}'");
+                }
+            }
+            else
             {
-                throw new InvalidOperationException("Invalid lock id. Cannot set pin value");
+                if (leaseId is not null)
+                {
+                    _leases.TryAdd(pinNumber, leaseId.Value);
+                    leaseAcquired = true;
+                }
             }
         }
         
-        _gpioController.Write(pinNumber, pinValue);
+        try
+        {
+            _gpioController.Write(pinNumber, pinValue);
+        }
+        catch (Exception)
+        {
+            if (leaseAcquired)
+            {
+                lock (LeaseLock)
+                {
+                    _leases.Remove(pinNumber);
+                }
+            }
+        }
     }
 
     public PinValue GetPinValue(int pinNumber)
     {
         return _gpioController.Read(pinNumber);
     }
-    
-    private void InitializePumpPins()
+
+    public bool BreakLease(int pinNumber)
     {
-        foreach (var pumpConfig in _raspberryOptions.Value.Pumps)
+        lock (LeaseLock)
         {
-            _gpioController.OpenPin(pumpConfig.Pin, PinMode.Output);
-                
-            _logger.LogInformation("Opened pin '{Pin}' for pump with id '{PumpId}' ", 
-                pumpConfig.Pin, pumpConfig.Id);
-        } 
+            return _leases.Remove(pinNumber);
+        }
     }
 }

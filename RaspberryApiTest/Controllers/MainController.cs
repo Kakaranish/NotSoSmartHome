@@ -9,16 +9,16 @@ public class MainController : ControllerBase
 {
     private readonly ILogger<MainController> _logger;
     private readonly GpioControllerAccessor _gpioControllerAccessor;
-    private readonly PumpsProvider _pumpsProvider;
+    private readonly PumpsConfigProvider _pumpsConfigProvider;
 
     public MainController(
         ILogger<MainController> logger,
         GpioControllerAccessor gpioControllerAccessor,
-        PumpsProvider pumpsProvider)
+        PumpsConfigProvider pumpsConfigProvider)
     {
         _logger = logger;
         _gpioControllerAccessor = gpioControllerAccessor;
-        _pumpsProvider = pumpsProvider;
+        _pumpsConfigProvider = pumpsConfigProvider;
     }
 
     [HttpGet]
@@ -31,7 +31,7 @@ public class MainController : ControllerBase
     [HttpPost("/toggle")]
     public IActionResult Toggle([FromBody] ToggleRequestDto requestDto)
     {
-        var pump = _pumpsProvider.GetOrDefaultById(requestDto.PumpId);
+        var pump = _pumpsConfigProvider.GetOrDefaultById(requestDto.PumpId);
         if (pump is null)
         {
             return NotFound("Pump not found");

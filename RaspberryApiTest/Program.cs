@@ -1,19 +1,37 @@
+using RaspberryApiTest.Calibration;
 using RaspberryApiTest.Raspberry;
 using RaspberryApiTest.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.WebHost.ConfigureKestrel(options =>
+builder.WebHost.ConfigureKestrel((x, options) =>
 {
-    options.ListenAnyIP(5000);
+    const int defaultPort = 5000; 
+    
+    var appUrl = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
+        ?.Split(";")
+        .FirstOrDefault();
+    if (string.IsNullOrWhiteSpace(appUrl))
+    {
+        options.ListenAnyIP(defaultPort);
+    }
+    else
+    {
+        var uri = new Uri(appUrl);
+        options.ListenAnyIP(uri.Port);
+    }
+    
 });
 
 builder.Services.RegisterRaspberry(builder.Configuration);
-builder.Services.AddSingleton<Calibrator>();
+builder.Services.AddSingleton<IGpioControllerAccessor, GpioControllerAccessor>();
+builder.Services.AddSingleton<PumpCalibrationService>();
 
 // --- Runtime middlewares ---
 
 var app = builder.Build();
+
+app.Services.GetRequiredService<GpioControllerAccessor>(); // Force DI initialization
 
 app.MapControllers();
 
