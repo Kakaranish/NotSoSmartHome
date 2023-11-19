@@ -1,32 +1,8 @@
 using System.Device.Gpio;
 
-namespace NotSoSmartHome.Services;
+namespace RaspberryAgent;
 
-public class FakeGpioController : GpioController
-{
-    private readonly Dictionary<int, PinValue> _pinValues = new(); 
-    
-    public override PinValue Read(int pinNumber)
-    {
-        return _pinValues.TryGetValue(pinNumber, out var pinValue)
-            ? pinValue
-            : PinValue.Low;
-    }
-
-    public override void Write(int pinNumber, PinValue value)
-    {
-        _pinValues[pinNumber] = value;
-    }
-}
-
-public interface IGpioControllerAccessor
-{
-    void SetPinValue(int pinNumber, PinValue pinValue, Guid? leaseId = null);
-    PinValue GetPinValue(int pinNumber);
-    bool BreakLease(int pinNumber);
-}
-
-public class GpioControllerAccessor : IGpioControllerAccessor
+public class GpioControllerAccessor
 {
     private static readonly object LeaseLock = new();
     

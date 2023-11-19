@@ -1,8 +1,8 @@
 using System.Device.Gpio;
 using Microsoft.Extensions.Options;
-using NotSoSmartHome.Configuration;
+using RaspberryAgent.Config;
 
-namespace NotSoSmartHome.Services;
+namespace RaspberryAgent;
 
 public class GpioControllerFactory
 {
@@ -25,12 +25,12 @@ public class GpioControllerFactory
         
         var gpioController = new GpioController(PinNumberingScheme.Logical);
 
-        foreach (var pumpConfig in _raspberryOptions.Value.Pumps)
+        foreach (var pinConfig in _raspberryOptions.Value.OpenedPins)
         {
-            gpioController.OpenPin(pumpConfig.Pin, PinMode.Output);
-                
-            _logger.LogInformation("Opened pin '{Pin}' for pump with id '{PumpId}' ", 
-                pumpConfig.Pin, pumpConfig.Id);   
+            gpioController.OpenPin(pinConfig.Pin, pinConfig.Mode);
+            
+            _logger.LogInformation("Opened pin '{Pin}' in '{PinMode}' mode", 
+                pinConfig.Pin, pinConfig.Mode);   
         }
 
         return gpioController;

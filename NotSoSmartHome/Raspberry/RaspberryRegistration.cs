@@ -9,9 +9,6 @@ public static class RaspberryRegistration
     {
         services.Configure<RaspberryOptions>(configuration.GetSection(RaspberryOptions.SectionName));
 
-        services.AddScoped<PumpsConfigProvider>();
-
-        services.AddSingleton<GpioControllerFactory>();
-        services.AddSingleton<GpioControllerAccessor>();
+        services.AddScoped<PumpsConfigProvider>();s
     }
 }
