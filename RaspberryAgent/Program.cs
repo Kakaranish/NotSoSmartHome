@@ -2,6 +2,13 @@ using RaspberryAgent;
 using RaspberryAgent.Config;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.Converters.Add(new PinValueJsonConverter());
+    });
+
 builder.Services.Configure<RaspberryOptions>(
     builder.Configuration.GetSection(RaspberryOptions.SectionName));
 
@@ -14,6 +21,6 @@ var app = builder.Build();
 
 app.Services.GetRequiredService<GpioControllerAccessor>(); // Force DI initialization
 
-app.MapGet("/", () => "Hello World!");
+app.MapControllers();
 
 app.Run();
