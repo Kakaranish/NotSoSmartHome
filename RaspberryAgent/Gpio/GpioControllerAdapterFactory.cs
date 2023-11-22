@@ -21,12 +21,13 @@ public class GpioControllerAdapterFactory
     {
         if (_raspberryOptions.Value.UseFakeGpioController)
         {
-            return new FakeGpioControllerAdapter();
+            var openPins = _raspberryOptions.Value.OpenPins.Select(p => p.Pin).ToArray();
+            return new FakeGpioControllerAdapter(openPins);
         }
         
         var gpioController = new GpioController(PinNumberingScheme.Logical);
 
-        foreach (var pinConfig in _raspberryOptions.Value.OpenedPins)
+        foreach (var pinConfig in _raspberryOptions.Value.OpenPins)
         {
             gpioController.OpenPin(pinConfig.Pin, pinConfig.Mode);
             

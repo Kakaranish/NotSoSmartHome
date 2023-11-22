@@ -4,6 +4,6 @@ public class RaspberryOptions
 {
     public static readonly string SectionName = "Raspberry";
 
-    public bool UseFakeGpioController { get; set; } = false;
-    public PinConfigSection[] OpenedPins { get; set; } = Array.Empty<PinConfigSection>();
+    public bool UseFakeGpioController { get; set; }
+    public PinConfigSection[] OpenPins { get; set; } = Array.Empty<PinConfigSection>();
 }

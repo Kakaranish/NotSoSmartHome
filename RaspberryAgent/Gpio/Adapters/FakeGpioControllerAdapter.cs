@@ -2,7 +2,13 @@ namespace RaspberryAgent.Gpio.Adapters;
 
 public class FakeGpioControllerAdapter : IGpioControllerAdapter
 {
-    private readonly Dictionary<int, PinValue> _pinValues = new(); 
+    private readonly int[] _openPins;
+    private readonly Dictionary<int, PinValue> _pinValues = new();
+
+    public FakeGpioControllerAdapter(int[] openPins)
+    {
+        _openPins = openPins;
+    }
 
     public void SetPinValue(int pinNumber, PinValue pinValue)
     {
@@ -18,6 +24,6 @@ public class FakeGpioControllerAdapter : IGpioControllerAdapter
 
     public bool IsPinOpen(int pinNumber)
     {
-        return true;
+        return _openPins.Contains(pinNumber);
     }
 }
