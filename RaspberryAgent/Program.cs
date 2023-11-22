@@ -1,18 +1,19 @@
-using RaspberryAgent;
+using System.Text.Json.Serialization;
 using RaspberryAgent.Config;
+using RaspberryAgent.Gpio;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddControllers()
-    .AddJsonOptions(o =>
+    .AddJsonOptions(options =>
     {
-        o.JsonSerializerOptions.Converters.Add(new PinValueJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.Configure<RaspberryOptions>(
     builder.Configuration.GetSection(RaspberryOptions.SectionName));
 
-builder.Services.AddSingleton<GpioControllerFactory>();
+builder.Services.AddSingleton<GpioControllerAdapterFactory>();
 builder.Services.AddSingleton<GpioControllerAccessor>();
 
 // --- Runtime middlewares ---

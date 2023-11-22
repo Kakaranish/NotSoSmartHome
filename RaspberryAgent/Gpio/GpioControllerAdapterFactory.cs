@@ -1,26 +1,27 @@
 using System.Device.Gpio;
 using Microsoft.Extensions.Options;
 using RaspberryAgent.Config;
+using RaspberryAgent.Gpio.Adapters;
 
-namespace RaspberryAgent;
+namespace RaspberryAgent.Gpio;
 
-public class GpioControllerFactory
+public class GpioControllerAdapterFactory
 {
-    private readonly ILogger<GpioControllerFactory> _logger;
+    private readonly ILogger<GpioControllerAdapterFactory> _logger;
     private readonly IOptions<RaspberryOptions> _raspberryOptions;
 
-    public GpioControllerFactory(ILogger<GpioControllerFactory> logger, 
+    public GpioControllerAdapterFactory(ILogger<GpioControllerAdapterFactory> logger, 
         IOptions<RaspberryOptions> raspberryOptions)
     {
         _logger = logger;
         _raspberryOptions = raspberryOptions;
     }
 
-    public GpioController Create()
+    public IGpioControllerAdapter Create()
     {
         if (_raspberryOptions.Value.UseFakeGpioController)
         {
-            return new FakeGpioController();
+            return new FakeGpioControllerAdapter();
         }
         
         var gpioController = new GpioController(PinNumberingScheme.Logical);
@@ -33,6 +34,6 @@ public class GpioControllerFactory
                 pinConfig.Pin, pinConfig.Mode);   
         }
 
-        return gpioController;
+        return new GpioControllerAdapter(gpioController);
     }
 }

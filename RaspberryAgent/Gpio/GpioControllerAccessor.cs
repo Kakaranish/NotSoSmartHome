@@ -1,6 +1,13 @@
-using System.Device.Gpio;
+using RaspberryAgent.Gpio.Adapters;
 
-namespace RaspberryAgent;
+namespace RaspberryAgent.Gpio;
+
+public enum SetPinValueResult
+{
+    Success,
+    PinNotOpen,
+    InvalidLeaseId
+}
 
 public class GpioControllerAccessor
 {
@@ -8,29 +15,27 @@ public class GpioControllerAccessor
     
     private readonly Dictionary<int, Guid> _leases = new();
 
-    private readonly GpioController _gpioController;
+    private readonly IGpioControllerAdapter _gpioControllerAdapter;
 
-    public GpioControllerAccessor(GpioControllerFactory gpioControllerFactory)
+    public GpioControllerAccessor(GpioControllerAdapterFactory gpioControllerAdapterFactory)
     {
-        _gpioController = gpioControllerFactory.Create();
+        _gpioControllerAdapter = gpioControllerAdapterFactory.Create();
     }
     
-    public void SetPinValue(int pinNumber, PinValue pinValue, Guid? leaseId = null)
+    public SetPinValueResult SetPinValue(int pinNumber, PinValue pinValue, Guid? leaseId = null)
     {
+        if (!_gpioControllerAdapter.IsPinOpen(pinNumber))
+            return SetPinValueResult.PinNotOpen;
+        
         var leaseAcquired = false;
         
         lock (LeaseLock)
         {
             if (_leases.TryGetValue(pinNumber, out var existingLeaseId))
             {
-                if (leaseId is null)
+                if (leaseId is null || leaseId != existingLeaseId)
                 {
-                    throw new InvalidOperationException($"Pin is already leased. Provide '{nameof(leaseId)}' to change its value");
-                }
-            
-                if (leaseId != existingLeaseId)
-                {
-                    throw new InvalidOperationException($"Invalid '{nameof(leaseId)}'");
+                    return SetPinValueResult.InvalidLeaseId;
                 }
             }
             else
@@ -45,7 +50,7 @@ public class GpioControllerAccessor
         
         try
         {
-            _gpioController.Write(pinNumber, pinValue);
+            _gpioControllerAdapter.SetPinValue(pinNumber, pinValue);
         }
         catch (Exception)
         {
@@ -57,11 +62,13 @@ public class GpioControllerAccessor
                 }
             }
         }
+
+        return SetPinValueResult.Success;
     }
 
-    public PinValue GetPinValue(int pinNumber)
+    public PinValue? GetPinValue(int pinNumber)
     {
-        return _gpioController.Read(pinNumber);
+        return _gpioControllerAdapter.GetPinValue(pinNumber);
     }
 
     public bool BreakLease(int pinNumber)

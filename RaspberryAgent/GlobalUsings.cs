@@ -1,0 +1,1 @@
+global using LibPinValue = System.Device.Gpio.PinValue;
