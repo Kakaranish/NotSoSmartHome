@@ -10,15 +10,20 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+builder.Services.AddHealthChecks();
+
 builder.Services.Configure<RaspberryOptions>(
     builder.Configuration.GetSection(RaspberryOptions.SectionName));
 
 builder.Services.AddSingleton<GpioControllerAdapterFactory>();
 builder.Services.AddSingleton<GpioControllerAccessor>();
 
+
 // --- Runtime middlewares ---
 
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 app.Services.GetRequiredService<GpioControllerAccessor>(); // Force DI initialization
 

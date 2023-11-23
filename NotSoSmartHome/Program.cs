@@ -1,6 +1,5 @@
-using NotSoSmartHome.Calibration;
-using NotSoSmartHome.Raspberry;
-using NotSoSmartHome.Services;
+using NotSoSmartHome.Configuration;
+using NotSoSmartHome.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -23,15 +22,20 @@ builder.WebHost.ConfigureKestrel((x, options) =>
     
 });
 
-builder.Services.RegisterRaspberry(builder.Configuration);
-builder.Services.AddSingleton<IGpioControllerAccessor, GpioControllerAccessor>();
-builder.Services.AddSingleton<PumpCalibrationService>();
+builder.Services.AddHttpClient();
+
+
+builder.Services.AddHealthChecks()
+    .AddCheck<PumpAgentHealthCheck>(nameof(PumpAgentHealthCheck));
+
+builder.Services.Configure<PumpAgentOptions>(
+    builder.Configuration.GetSection(PumpAgentOptions.SectionName));
 
 // --- Runtime middlewares ---
 
 var app = builder.Build();
 
-app.Services.GetRequiredService<GpioControllerAccessor>(); // Force DI initialization
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 
