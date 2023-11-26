@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using RaspberryAgent;
 using RaspberryAgent.Config;
 using RaspberryAgent.Gpio;
 
@@ -11,6 +12,8 @@ builder.Services
     });
 
 builder.Services.AddHealthChecks();
+
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 builder.Services.Configure<RaspberryOptions>(
     builder.Configuration.GetSection(RaspberryOptions.SectionName));

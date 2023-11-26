@@ -6,7 +6,8 @@
       "launchBrowser": false,
       "applicationUrl": "http://0.0.0.0:6000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PUMP_AGENT_API_KEY": "8f68b8a633ea4b6e86d9318f7cd63232"
       }
     }
   }

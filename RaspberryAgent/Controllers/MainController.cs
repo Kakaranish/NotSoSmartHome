@@ -4,6 +4,7 @@ using RaspberryAgent.Gpio;
 namespace RaspberryAgent.Controllers;
 
 [ApiController]
+[ApiKeyAuthFilter]
 public class MainController : ControllerBase
 {
     private readonly GpioControllerAccessor _gpioControllerAccessor;
