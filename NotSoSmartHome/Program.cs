@@ -2,7 +2,9 @@ using NotSoSmartHome.Configuration;
 using NotSoSmartHome.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+builder.Services.AddControllers(c => {});
+builder.Services.AddHttpClient();
+
 builder.WebHost.ConfigureKestrel((x, options) =>
 {
     const int defaultPort = 5000; 
@@ -19,12 +21,9 @@ builder.WebHost.ConfigureKestrel((x, options) =>
         var uri = new Uri(appUrl);
         options.ListenAnyIP(uri.Port);
     }
-    
 });
 
-builder.Services.AddHttpClient();
-
-
+builder.Services.AddAuthorization();
 builder.Services.AddHealthChecks()
     .AddCheck<PumpAgentHealthCheck>(nameof(PumpAgentHealthCheck));
 
