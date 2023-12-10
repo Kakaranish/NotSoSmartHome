@@ -22,6 +22,7 @@ public class GpioControllerAdapterFactory
         if (_raspberryOptions.Value.UseFakeGpioController)
         {
             var openPins = _raspberryOptions.Value.OpenPins.Select(p => p.Pin).ToArray();
+            _logger.LogInformation("Initialized fake gpio controller adapter");
             return new FakeGpioControllerAdapter(openPins);
         }
         
@@ -35,6 +36,7 @@ public class GpioControllerAdapterFactory
                 pinConfig.Pin, pinConfig.Mode);   
         }
 
+        _logger.LogInformation("Initialized real gpio controller adapter");
         return new GpioControllerAdapter(gpioController);
     }
 }

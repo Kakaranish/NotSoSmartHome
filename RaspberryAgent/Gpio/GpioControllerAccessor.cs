@@ -78,4 +78,9 @@ public class GpioControllerAccessor
             return _leases.Remove(pinNumber);
         }
     }
+
+    public bool IsGpioAccessible()
+    {
+        return _gpioControllerAdapter.IsGpioAccessible();
+    }
 }

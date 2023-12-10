@@ -26,4 +26,9 @@ public class FakeGpioControllerAdapter : IGpioControllerAdapter
     {
         return _openPins.Contains(pinNumber);
     }
+
+    public bool IsGpioAccessible()
+    {
+        return true;
+    }
 }

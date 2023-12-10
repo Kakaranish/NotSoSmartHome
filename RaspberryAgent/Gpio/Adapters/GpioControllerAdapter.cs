@@ -28,4 +28,20 @@ public class GpioControllerAdapter : IGpioControllerAdapter
     {
         return _gpioController.IsPinOpen(pinNumber);
     }
+
+    public bool IsGpioAccessible()
+    {
+        try
+        {
+            const int anyPinNumber = 20;
+            const PinMode anyPinMode = PinMode.Input;
+            _gpioController.IsPinModeSupported(anyPinNumber, anyPinMode);
+            
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 }

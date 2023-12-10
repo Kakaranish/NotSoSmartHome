@@ -11,7 +11,8 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddCheck<GpioHealthCheck>(nameof(GpioHealthCheck));
 
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 
@@ -20,7 +21,6 @@ builder.Services.Configure<RaspberryOptions>(
 
 builder.Services.AddSingleton<GpioControllerAdapterFactory>();
 builder.Services.AddSingleton<GpioControllerAccessor>();
-
 
 // --- Runtime middlewares ---
 
