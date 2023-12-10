@@ -1,4 +1,4 @@
-namespace NotSoSmartHome.Calibration;
+namespace NotSoSmartHome.API.Calibration;
 
 public class Calibration
 {

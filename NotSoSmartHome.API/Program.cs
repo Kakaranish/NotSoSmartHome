@@ -1,5 +1,5 @@
-using NotSoSmartHome.Configuration;
-using NotSoSmartHome.HealthChecks;
+using NotSoSmartHome.API.Configuration;
+using NotSoSmartHome.API.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(c => {});

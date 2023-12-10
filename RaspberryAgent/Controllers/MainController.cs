@@ -15,7 +15,7 @@ public class MainController : ControllerBase
     }
 
     [HttpPost("pins")]
-    public IActionResult PostSetPinValue([FromBody] SetPinValueRequestDto dto)
+    public IActionResult SetPinValue([FromBody] SetPinValueRequestDto dto)
     {
         var result = _gpioControllerAccessor.SetPinValue(dto.Pin, dto.PinValue, dto.LeaseId);
         if (result == SetPinValueResult.Success)

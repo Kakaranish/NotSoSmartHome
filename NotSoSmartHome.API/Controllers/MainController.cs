@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace NotSoSmartHome.Controllers;
+namespace NotSoSmartHome.API.Controllers;
 
 [Route("/")]
 public class MainController : ControllerBase

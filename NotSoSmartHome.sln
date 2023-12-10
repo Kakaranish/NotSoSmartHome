@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotSoSmartHome", "NotSoSmartHome\NotSoSmartHome.csproj", "{26861E60-D559-4780-A285-2D28008A3522}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotSoSmartHome.API", "NotSoSmartHome.API\NotSoSmartHome.API.csproj", "{26861E60-D559-4780-A285-2D28008A3522}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaspberryAgent", "RaspberryAgent\RaspberryAgent.csproj", "{CC6580AA-FEEC-46E5-8CAA-9D3AFC5F946C}"
 EndProject
