@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using NotSoSmartHome.Data;
+using NotSoSmartHome.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+var dbConnectionString = builder.Configuration.GetConnectionString("Postgresql");
+builder.Services.AddDbContext<ApplicationDbContext>(o =>
+    o.UseNpgsql(connectionString: dbConnectionString));
 
 var app = builder.Build();
 
